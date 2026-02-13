@@ -1,0 +1,28 @@
+{
+  "plugins": [
+    "@semantic-release/gitlab",
+    ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
+    ["@semantic-release/commit-analyzer", {
+      "preset": "conventionalcommits",
+      "parserOpts": {
+        "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+      }
+    }],
+    ["@semantic-release/release-notes-generator", {
+      "parserOpts": {
+        "noteKeywords": ["BREAKING CHANGE", "BREAKING CHANGES"]
+      }
+    }],
+    ["@semantic-release/npm", { "npmPublish": true }], 
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["package.json", "CHANGELOG.md"],
+        "message": "chore(release): {nextRelease.version} [skip ci] {nextRelease.notes}"
+      }
+    ]
+  ],
+  "branches": ["main"],
+  "type": "git",
+  "url": "git@gitlab.com:sanardigital/tools/jaiminho-comunications.git"
+}
