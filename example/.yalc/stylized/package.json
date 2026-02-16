@@ -1,0 +1,41 @@
+{
+  "name": "stylized",
+  "version": "0.0.1",
+  "description": "this library is responsible for managing the communications",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "env:prod": "node ./scripts/prod/generate.js",
+    "build": "rm -rf dist && tspc && tsc -p tsconfig.json",
+    "lint:fix": "yarn lint --fix",
+    "lint": "yarn --lint",
+    "pipeline:build": "yarn build",
+    "test": "jest",
+    "build:dev": "yarn build && yalc push",
+    "build:watch": "./watch.sh"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-native": "*",
+    "react-dom": ">=18",
+    "axios": "*"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "exports": {
+    "./react-native": {
+      "import": "./dist/react-native/index.js",
+      "require": "./dist/react-native/index.js",
+      "types": "./dist/react-native/index.d.ts"
+    },
+    "./react-native/types": {
+      "import": "./dist/react-native/types.d.ts",
+      "require": "./dist/react-native/types.d.ts",
+      "types": "./dist/react-native/types.d.ts"
+    }
+  },
+  "yalcSig": "d293b7910df65d72bf5c82cae83d1d67"
+}

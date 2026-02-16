@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "stylized": {
+      "signature": "d293b7910df65d72bf5c82cae83d1d67",
+      "file": true,
+      "replaced": "../dist"
+    }
+  }
+}
