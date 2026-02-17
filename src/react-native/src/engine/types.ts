@@ -2,13 +2,11 @@ import * as RN from 'react-native';
 import React from 'react';
 import { RNComponents } from './constants';
 
-export type StyleObject = RN.StyleProp<
-  RN.ViewStyle | RN.TextStyle | RN.ImageStyle
->;
+export type StyleObject = RN.StyleProp<RN.ViewStyle>;
 
 export type Resolver<P> = (ctx: { theme: EngineTheme } & P) => StyleObject;
 
- type StyleModifier<P> = Resolver<P>;
+type StyleModifier<P> = Resolver<P>;
 
 export type Interpolation<P> = StyleObject | StyleModifier<P>;
 
