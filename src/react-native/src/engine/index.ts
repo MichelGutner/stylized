@@ -1,13 +1,7 @@
 import { RNComponentNames, RNComponentProps } from './types';
 import { RNComponents } from './constants';
-import { createStyledComponent } from './factory';
+import { createStyledComponent } from './styled-engine';
 
-/**
- * Type map for all styled engine components.
- *
- * Automatically maps every React Native core component
- * into a styled template-based version.
- */
 type EngineComponents = {
   [K in RNComponentNames]: ReturnType<
     typeof createStyledComponent<K, RNComponentProps<K>>
