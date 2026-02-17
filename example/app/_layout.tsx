@@ -1,13 +1,5 @@
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from '@react-navigation/native';
 import { Stack } from 'expo-router';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import { setTheme } from 'stylized/react-native';
-import { useEffect } from 'react';
 
 export const unstable_settings = {
   anchor: 'index',
@@ -27,16 +19,9 @@ setTheme({
 });
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
-  useEffect(() => {
-  }, []);
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
       </Stack>
-    </ThemeProvider>
   );
 }

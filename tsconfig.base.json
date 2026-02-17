@@ -17,16 +17,16 @@
     "noEmit": false,
     "jsx": "react-jsx",
   },
-  "include": ["packages/**/*", "**/__tests__/*"],
+  "include": ["src/**/*", "**/__tests__/*"],
   "exclude": [
     "node_modules",
     "dist",
     "example",
-    "packages/**/*/__tests__/*",
-    "packages/**/*/__mocks__/*",
-    "packages/**/*/jest.config.js",
-    "packages/**/*/babel.config.js",
-    "packages/testing/*",
-    "packages/web/*"
+    "src/**/*/__tests__/*",
+    "src/**/*/__mocks__/*",
+    "src/**/*/jest.config.js",
+    "src/**/*/babel.config.js",
+    "src/testing/*",
+    "src/web/*"
   ]
 }

@@ -1,7 +1,7 @@
 import { Text } from 'react-native';
-import { stylized, useTheme, setTheme } from 'stylized/react-native';
+import { engine, useTheme, setTheme } from 'stylized/react-native';
 
-const StyledView = stylized.View`
+const StyledView = engine.View`
   ${({ theme }) => ({
     flex: 1,
     backgroundColor: theme.color.background,
@@ -11,7 +11,7 @@ const StyledView = stylized.View`
   })}
 `;
 
-const StyledPressable = stylized.Pressable`
+const StyledPressable = engine.Pressable`
   ${({ theme }) => ({
     backgroundColor: theme.color.primary,
     padding: theme.spacing.xl,
@@ -19,10 +19,6 @@ const StyledPressable = stylized.Pressable`
 `;
 
 export const TestComponent = () => {
-  const theme = useTheme();
-  console.log("🚀 ~ TestComponent ~ theme:", theme)
-
-
   const handleToggleTheme = () => {
     setTheme((prevTheme) => ({
       ...prevTheme,

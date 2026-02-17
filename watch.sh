@@ -1,6 +1,6 @@
 #!/bin/bash
 
-WATCH_DIR="packages"
+WATCH_DIR="src"
 
 if [ ! -d "$WATCH_DIR" ]; then
   echo "❌ Directory '$WATCH_DIR' not found"

@@ -1,7 +1,7 @@
 import { DimensionValue } from 'react-native';
 
 declare global {
-  interface DefaultTheme {
+  interface EngineTheme {
     color: {
       background: string;
       text: string;

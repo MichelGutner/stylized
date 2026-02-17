@@ -62,11 +62,6 @@
       "import": "./dist/react-native/index.js",
       "require": "./dist/react-native/index.js",
       "types": "./dist/react-native/index.d.ts"
-    },
-    "./react-native/types": {
-      "import": "./dist/react-native/types.d.ts",
-      "require": "./dist/react-native/types.d.ts",
-      "types": "./dist/react-native/types.d.ts"
     }
   }
 }
