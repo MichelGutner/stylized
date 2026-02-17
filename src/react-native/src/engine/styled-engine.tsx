@@ -1,7 +1,7 @@
 import * as RN from 'react-native';
-import { useMemo, memo } from "react";
-import { useTheme } from "../theme";
-import { StyleObject, Interpolation, RNComponentProps, BaseComponent } from "./types";
+import { useMemo, memo, forwardRef } from 'react';
+import { useTheme } from '../theme';
+import { Interpolation, RNComponentProps, BaseComponent, InferRef } from './types';
 
 /**
  * Resolves a single interpolation entry.
@@ -21,7 +21,7 @@ import { StyleObject, Interpolation, RNComponentProps, BaseComponent } from "./t
 function resolveInterpolation<P>(
   item: Interpolation<P>,
   ctx: { theme: EngineTheme } & P,
-): StyleObject {
+) {
   if (typeof item === 'function') {
     return item(ctx);
   }
@@ -45,70 +45,54 @@ function resolveInterpolation<P>(
  * @param BaseComponent - React Native base component
  * @returns Styled component factory
  */
-function enhanceWithStyles<PBase, PExtra = object>(
+function enhanceWithStyles<Ref, PBase, PExtra = object>(
   BaseComponent: BaseComponent<PBase>,
 ) {
   return <P extends PExtra>(
     _: TemplateStringsArray,
     ...interpolations: Interpolation<P>[]
   ) => {
-    const Component: React.FC<PBase & P> = props => {
+    const Component = forwardRef<Ref, PBase & P>((props, ref) => {
       const theme = useTheme();
 
-      const resolvedStyles = useMemo<StyleObject[]>(() => {
+      const resolvedStyles = useMemo(() => {
         if (!interpolations) return [];
 
         const ctx = { theme, ...(props as P) };
 
-        return interpolations.reduce<StyleObject[]>((acc, item) => {
+        return interpolations.reduce((acc, item) => {
           const style = resolveInterpolation(item, ctx);
           return [...acc, style].filter(Boolean);
         }, []);
       }, [theme, props]);
-
-      /**
-       * Extracts the original `style` prop to preserve
-       * React Native's native styling API compatibility.
-       */
+      
       const { style, ...restProps } = props as PBase & {
-        style?: StyleObject;
+        style?: [];
       };
 
       return (
         <BaseComponent
+          ref={ref}
           {...(restProps as PBase)}
           style={resolvedStyles ? [resolvedStyles, style] : style}
         />
       );
-    };
+    });
 
-    /**
-     * Memoization ensures:
-     * - Referential stability
-     * - Reduced re-renders
-     * - Performance consistency in large trees
-     */
     return memo(Component);
   };
 }
 
-/**
- * Factory that creates a styled version of a React Native core component.
- *
- * Example:
- * `createStyledComponent('View')` → styled View factory
- *
- * @param component - React Native component key
- * @returns Styled component factory
- */
-export const createStyledComponent = <K extends keyof typeof RN, T = object>(
+export const createStyledComponent = <
+  T,
+  K extends keyof typeof RN = keyof typeof RN,
+>(
   component: K,
 ) => {
-  type Props = RNComponentProps<K>;
+  type Props = RNComponentProps<K> & T;
+  type RefType = InferRef<(typeof RN)[K]>;
 
-  const BaseComponent = RN[component] as React.ComponentType<
-    Props & { style?: StyleObject }
-  >;
+  const BaseComponent = RN[component] as React.ComponentType<Props>;
 
-  return enhanceWithStyles<Props, T>(BaseComponent);
+  return enhanceWithStyles<RefType, Props, T>(BaseComponent);
 };

@@ -7,12 +7,12 @@ const esModules = [...reactNativeEsModules, ...externalLibsEsModules].join('|');
 /** @type {import('jest').Config} */
 const config = {
   projects: [
-    './packages/core/jest.config.js',
-    './packages/web/jest.config.js',
-    './packages/react-native/jest.config.js',
+    './src/core/jest.config.js',
+    './src/web/jest.config.js',
+    './src/react-native/jest.config.js',
   ],
   collectCoverage: true,
-  collectCoverageFrom: ['<rootDir>/packages/**/*.{ts,tsx}'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.{ts,tsx}'],
   moduleFileExtensions: extensionFiles,
   testTimeout: 20000,
   coverageDirectory: '<rootDir>/coverage',

@@ -27,7 +27,7 @@ export const useTheme = () => {
     themeStore.getSnapshot,
   ) as EngineTheme;
 
-  return theme;
+  return theme as EngineTheme;
 };
 
 export { setTheme, getTheme } from './store';

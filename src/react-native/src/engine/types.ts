@@ -1,18 +1,25 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as RN from 'react-native';
 import React from 'react';
-import { RNComponents } from './constants';
 
-export type StyleObject = RN.StyleProp<RN.ViewStyle>;
+export type Ctx = { theme: EngineTheme };
 
-export type Resolver<P> = (ctx: { theme: EngineTheme } & P) => StyleObject;
+export type CtxResolver<
+  P extends {
+    style?: unknown;
+  },
+> = (ctx: Ctx & P) => P['style'] | P['style'][];
 
-type StyleModifier<P> = Resolver<P>;
+export type Interpolation<P> = CtxResolver<P>;
 
-export type Interpolation<P> = StyleObject | StyleModifier<P>;
-
-export type BaseComponent<P> = React.ComponentType<P & { style?: StyleObject }>;
+export type BaseComponent<P> = React.ComponentType<P>;
 
 export type RNComponentProps<K extends keyof typeof RN> =
   (typeof RN)[K] extends React.ComponentType<infer P> ? P : never;
 
-export type RNComponentNames = (typeof RNComponents)[number];
+export type RNComponentNames = (typeof RN)[keyof typeof RN];
+
+// @ts-ignore
+export type InferRef<T> = React.ComponentPropsWithRef<T> extends { ref?: React.Ref<infer R> }
+    ? R
+    : never;

@@ -28,8 +28,8 @@ Se este for o primeiro projeto com dependências privadas que você está utiliz
 - Execute o seguinte comando na raiz do projeto para configurar o arquivo .npmrc:
 
 ```shel
-echo "@sanardigital:registry=https://gitlab.com/api/v4/packages/npm/
-//gitlab.com/api/v4/packages/npm/:_authToken=${GITLAB_TOKEN}
+echo "@sanardigital:registry=https://gitlab.com/api/v4/src/npm/
+//gitlab.com/api/v4/src/npm/:_authToken=${GITLAB_TOKEN}
 //gitlab.com/api/v4/projects/:_authToken=${GITLAB_TOKEN}
 " >> .npmrc
 ```
