@@ -1,5 +1,3 @@
-import * as RN from 'react-native';
-console.log(RN.View.name)
 import { createStyledComponent } from './styled-engine';
 /**
  * Global styled engine registry.

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { setTheme, themeStore } from './store';
+import { themeStore } from './store';
 
 /**
  * Reactive hook that returns the current theme.

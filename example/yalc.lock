@@ -2,9 +2,8 @@
   "version": "v1",
   "packages": {
     "stylized": {
-      "signature": "d293b7910df65d72bf5c82cae83d1d67",
-      "file": true,
-      "replaced": "../dist"
+      "signature": "25023c77cbe2eea4070930c0763ba25e",
+      "file": true
     }
   }
 }

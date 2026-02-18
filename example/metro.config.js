@@ -6,10 +6,10 @@ const workspaceRoot = path.resolve(projectRoot, '..');
 
 const config = getDefaultConfig(projectRoot);
 
-// Add watch folders for local packages
+// Add watch folders for local src
 config.watchFolders = [workspaceRoot];
 
-// Add resolver for local packages using extraNodeModules
+// Add resolver for local src using extraNodeModules
 config.resolver.extraNodeModules = {
   'stylized': path.resolve(workspaceRoot, 'dist'),
 };

@@ -1,52 +1,125 @@
-## Jaiminho Notifications
-O ***Jaiminho Notifications*** é uma abstração para a implementação de canais de comunicação por mensagens, projetada para facilitar a integração de notificações em aplicações web e mobile.
+# 🎨 Stylized
+
+> Modern styling library for React and React Native with template literals and global theming
+
+[![npm version](https://badge.fury.io/js/stylized.svg)](https://badge.fury.io/js/stylized)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+---
+
+## 📚 Documentation
+
+**Complete documentation is available in our interactive docs:**
+
+### 🚀 [Getting Started](./docs/index.md)
+
+Installation, setup, and basic usage for both React Native and React Web.
+
+### 🎮 [Interactive Playground](./docs/playground.md)
+
+Try Stylized right now with live examples and demos.
+
+### 📖 [Full Documentation](./docs/index.md)
+
+- 🎨 Styling Guide
+- 🌍 Theme System
+- 📱 Components Reference
+- ⚡ Performance Guide
+- � Migration Guide
+- 🔧 API Reference
+
+---
+
+## ⚡ Quick Start
+
+```bash
+npm install stylized
+# or
+yarn add stylized
+```
+
+### React Native
+
+```tsx
+import { engine, setTheme } from 'stylized/react-native';
+
+setTheme({
+  colors: { primary: '#007AFF', background: '#FFFFFF' },
+  spacing: { md: 16 },
+});
+
+const Container = engine.View()`
+  ${({ theme }) => ({
+    flex: 1,
+    backgroundColor: theme.colors.background,
+    padding: theme.spacing.md,
+  })}
+`;
+```
+
+### React Web
+
+```tsx
+import { engine, setTheme } from 'stylized/react';
+
+setTheme({
+  colors: { primary: '#007AFF', background: '#FFFFFF' },
+  spacing: { md: 16 },
+});
+
+const Container = engine.div()`
+  ${({ theme }) => ({
+    display: 'flex',
+    minHeight: '100vh',
+    backgroundColor: theme.colors.background,
+    padding: `${theme.spacing.md}px`,
+  })}
+`;
+```
+
+---
+
+## ✨ Features
+
+- 🎨 **Template Literal Styling**
+- 🌍 **Global Theme System** (no providers needed)
+- 🔒 **Full TypeScript Support**
+- ⚡ **Optimized Performance**
+- 📱 **Cross-Platform Support**
+
+---
+
+## 📊 Why Stylized?
+
+| Feature | Stylized | Styled Components | StyleSheet | Emotion |
+|---------|----------|-------------------|-------------|---------|
+| Template Literals | ✅ | ✅ | ❌ | ✅ |
+| Global Theme (No Provider) | ✅ | ❌ | ❌ | ❌ |
+| TypeScript Support | ✅ | ✅ | ✅ | ✅ |
+| React Native Support | ✅ | ✅ | ✅ | ❌ |
+| React Web Support | ✅ | ✅ | ❌ | ✅ |
+| Performance | ⚡ | ⚡ | ⚡⚡ | ⚡ |
+
+---
+
+## 🤝 Community
+
+- [🐛 Report Issues](https://github.com/MichelGutner/stylized/issues)
+- [💡 Feature Requests](https://github.com/MichelGutner/stylized/discussions)
+- [📖 Full Documentation](./docs/index.md)
+
+---
+
+## 📄 License
+
+MIT © [Michel Gutner]
+
+---
 
 <div align="center">
-    <img src="./assets/avatar.jpeg" alt="Texto alternativo" style="width:400px; height:auto;" />
+
+**Built with ❤️ for the React community**
+
+[📚 View Full Documentation](./docs/index.md)
+
 </div>
-
-#### Para desenvolvedores
-
-##### Pré-requisitos
-Antes de começar, certifique-se de ter as seguintes dependências instaladas:
-- [nvm](https://github.com/nvm-sh/nvm)
-- [Node v18+](https://nodejs.org/en)
-- [Yarn](https://yarnpkg.com/)
-
-##### Configuração do Ambiente
-Definindo a Versão do Node.js. O projeto utiliza uma versão específica do Node.js, definida no arquivo .nvmrc. Para configurar a versão correta, execute o comando abaixo:
-
-```shell
-nvm use 20
-```
-**Observação**: Esse comando requer que o nvm esteja instalado globalmente no seu sistema.
-
-##### **Configuração do Token de Acesso ao GitLab**
-Se este for o primeiro projeto com dependências privadas que você está utilizando, será necessário configurar um token de acesso ao GitLab para instalar os pacotes privados. Siga os passos abaixo:
-
-- Gere um Access Token no GitLab.
-- Execute o seguinte comando na raiz do projeto para configurar o arquivo .npmrc:
-
-```shel
-echo "@sanardigital:registry=https://gitlab.com/api/v4/src/npm/
-//gitlab.com/api/v4/src/npm/:_authToken=${GITLAB_TOKEN}
-//gitlab.com/api/v4/projects/:_authToken=${GITLAB_TOKEN}
-" >> .npmrc
-```
-Substitua ${`GITLAB_TOKEN`} pelo token que você gerou. Se o arquivo .npmrc já estiver configurado, você pode pular essa etapa.
-
-##### Instalação das Dependências
-Após configurar a versão do Node.js e o token de acesso, instale as dependências do projeto utilizando um dos comandos abaixo:
-
-```shell
-yarn install
-```
-```shell
-npm install
-```
-
-### Implementação da Biblioteca
-
-#### [Web](https://www.notion.so/Tutorial-Implementa-o-da-biblioteca-de-notifica-es-web-1bab3b75c7e1809c985cc76d07bfc60e)
-
-#### [Mobile](https://www.notion.so/Tutorial-Implementa-o-da-biblioteca-de-notifica-es-mobile-1bab3b75c7e18016ad9bcc1a3a9f1e9d)

@@ -21,8 +21,8 @@ Se esse for o primeiro projeto com dependências privadas que você esteja execu
 gere no Gitlab um `AcessToken` e adicione na raíz do seu usuário um arquivo chamado .npmrc com o seguinte conteúdo:
 
 ```shel
-@sanardigital:registry=https://gitlab.com/api/v4/packages/npm/
-//gitlab.com/api/v4/packages/npm/:_authToken=<TOKEN>
+@sanardigital:registry=https://gitlab.com/api/v4/src/npm/
+//gitlab.com/api/v4/src/npm/:_authToken=<TOKEN>
 //gitlab.com/api/v4/projects/:_authToken=<TOKEN>
 //registry.npmjs.org/:_authToken=<TOKEN>
 ```

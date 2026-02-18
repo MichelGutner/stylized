@@ -1,7 +1,14 @@
 import * as RN from 'react-native';
 import { useMemo, memo, forwardRef } from 'react';
 import { useTheme } from '../theme';
-import { Interpolation, RNComponentProps, BaseComponent, InferRef } from './types';
+import {
+  Interpolation,
+  ReactNativeComponentProperties,
+  BaseComponent,
+  InferRef,
+  ComponentStyleMap,
+  GetComponentStyle,
+} from './types';
 
 /**
  * Resolves a single interpolation entry.
@@ -18,9 +25,9 @@ import { Interpolation, RNComponentProps, BaseComponent, InferRef } from './type
  * @param ctx - Resolution context (theme + props)
  * @returns Resolved style object
  */
-function resolveInterpolation<P>(
-  item: Interpolation<P>,
-  ctx: { theme: EngineTheme } & P,
+function resolveInterpolation<P, AdditionalProps, StyleType>(
+  item: Interpolation<P, AdditionalProps, StyleType>,
+  ctx: { theme: EngineTheme } & P & AdditionalProps,
 ) {
   if (typeof item === 'function') {
     return item(ctx);
@@ -45,54 +52,74 @@ function resolveInterpolation<P>(
  * @param BaseComponent - React Native base component
  * @returns Styled component factory
  */
-function enhanceWithStyles<Ref, PBase, PExtra = object>(
-  BaseComponent: BaseComponent<PBase>,
-) {
-  return <P extends PExtra>(
+function enhanceWithStyles<
+  Ref,
+  BaseProps,
+  StyleOverrides = object,
+  AdditionalProps = object,
+  StyleType = unknown,
+>(BaseComponent: BaseComponent<BaseProps>) {
+  return (
     _: TemplateStringsArray,
-    ...interpolations: Interpolation<P>[]
+    ...interpolations: Interpolation<
+      StyleOverrides,
+      AdditionalProps,
+      StyleType
+    >[]
   ) => {
-    const Component = forwardRef<Ref, PBase & P>((props, ref) => {
-      const theme = useTheme();
+    const Component = forwardRef<Ref, BaseProps & StyleOverrides>(
+      (props, ref) => {
+        const theme = useTheme();
 
-      const resolvedStyles = useMemo(() => {
-        if (!interpolations) return [];
+        const resolvedStyles = useMemo(() => {
+          if (!interpolations) return [];
 
-        const ctx = { theme, ...(props as P) };
+          const ctx = { theme, ...(props as StyleOverrides & AdditionalProps) };
 
-        return interpolations.reduce((acc, item) => {
-          const style = resolveInterpolation(item, ctx);
-          return [...acc, style].filter(Boolean);
-        }, []);
-      }, [theme, props]);
-      
-      const { style, ...restProps } = props as PBase & {
-        style?: [];
-      };
+          return interpolations.reduce((acc, item) => {
+            const style = resolveInterpolation(item, ctx);
+            return [...acc, style].filter(Boolean);
+          }, []);
+        }, [theme, props]);
 
-      return (
-        <BaseComponent
-          ref={ref}
-          {...(restProps as PBase)}
-          style={resolvedStyles ? [resolvedStyles, style] : style}
-        />
-      );
-    });
+        const { style, ...restProps } = props as BaseProps & {
+          style?: [];
+        };
+
+        return (
+          <BaseComponent
+            ref={ref}
+            {...(restProps as BaseProps)}
+            style={resolvedStyles ? [resolvedStyles, style] : style}
+          />
+        );
+      },
+    );
 
     return memo(Component);
   };
 }
 
 export const createStyledComponent = <
-  T,
-  K extends keyof typeof RN = keyof typeof RN,
+  AdditionalProps,
+  K extends keyof ComponentStyleMap = keyof ComponentStyleMap,
 >(
   component: K,
 ) => {
-  type Props = RNComponentProps<K> & T;
+  type ComponentStyleType = GetComponentStyle<K>;
+  type StyledEngineProps = ReactNativeComponentProperties<K> &
+    AdditionalProps & { style?: ComponentStyleType };
   type RefType = InferRef<(typeof RN)[K]>;
 
-  const BaseComponent = RN[component] as React.ComponentType<Props>;
+  type StyleProps = Pick<StyledEngineProps, 'style'>;
 
-  return enhanceWithStyles<RefType, Props, T>(BaseComponent);
+  const BaseComponent = RN[component] as React.ComponentType<StyledEngineProps>;
+
+  return enhanceWithStyles<
+    RefType,
+    StyledEngineProps,
+    StyleProps,
+    AdditionalProps,
+    ComponentStyleType
+  >(BaseComponent);
 };
