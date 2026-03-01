@@ -1,68 +1,64 @@
 import { useState } from 'react';
-import { Text, ScrollView, SafeAreaView, StatusBar } from 'react-native';
+import { Text, ScrollView, SafeAreaView, StatusBar, View } from 'react-native';
 import { engine, useTheme, setTheme } from 'stylized/react-native';
 
-const Container = engine.View()`
-  ${({ theme }) => ({
-    flex: 1,
-    backgroundColor: theme.color.background,
-    padding: theme.spacing.lg,
-  })}
-`;
+const Container = engine('View', ({ theme }) => ({
+  flex: 1,
+  backgroundColor: theme.color.background,
+  padding: theme.spacing.lg,
+}));
 
-const Content = engine.View()`
-  ${({ theme }) => ({
-    padding: theme.spacing.lg,
-  })}
-`;
+const Card = engine(View, ({ theme }) => ({
+  backgroundColor: theme.color.background === '#ffffff' ? '#f8f9fa' : '#2d3748',
+  padding: theme.spacing.md,
+  marginBottom: theme.spacing.md,
+  borderRadius: 8,
+  shadowColor: '#131111',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  elevation: 3,
+}))
 
-const Card = engine.View()`
-  ${({ theme }) => ({
-    backgroundColor:
-      theme.color.background === '#ffffff' ? '#f8f9fa' : '#2d3748',
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  })}
-`;
+Card.when(ctx => ctx.platform === 'ios', {
+  ref: (ref) => console.log('Ref específico para iOS:', ref),
+  children: <Text>Card específico para iOS</Text>,
+})
 
-const Title = engine.Text()`
-  ${({ theme }) => ({
-    fontSize: 24,
-    fontWeight: '400',
-    color: theme.color.text,
-    marginBottom: theme.spacing.md,
-    textAlign: 'center',
-  })}
-`;
+Card.attrs({
+  onLayout: (e) => console.log('Layout do Card:', e.nativeEvent.layout),
+});
 
-const Subtitle = engine.Text()`
-  ${({ theme }) => ({
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.color.text,
-    marginBottom: theme.spacing.sm,
-  })}
-`;
+const Title = engine('Text', ({ theme }) => ({
+  fontSize: 24,
+  fontWeight: "900",
+  color: theme.color.text,
+  marginBottom: theme.spacing.md,
+  textAlign: 'center',
+}));
 
-const BodyText = engine.Text()`
-  ${({ theme }) => ({
-    fontSize: 16,
-    color: theme.color.text,
-    lineHeight: 24,
-    marginBottom: theme.spacing.sm,
-  })}
-`;
+const Subtitle = engine('Text', ({ theme }) => ({
+  fontSize: 18,
+  fontWeight: '800',
+  color: theme.color.text,
+  marginBottom: theme.spacing.sm,
+}));
 
-const Button = engine.Pressable<{
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
-}>()`
-  ${({ theme, variant = 'primary' }) => ({
+Subtitle.when('ios', {
+  children: '🎨 Paleta de Cores',
+});
+
+const BodyText = engine('Text', ({ theme }) => ({
+  fontSize: 16,
+  color: theme.color.text,
+  lineHeight: 24,
+  marginBottom: theme.spacing.sm,
+}));
+
+const Button = engine<
+  'Pressable',
+  { variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' }
+>('Pressable', ({ theme, props: { variant = 'primary' } }) => ({
     backgroundColor:
       variant === 'primary'
         ? theme.color.primary
@@ -80,69 +76,52 @@ const Button = engine.Pressable<{
     borderRadius: 6,
     alignItems: 'center',
     marginBottom: theme.spacing.sm,
-  })}
-`;
+  }));
 
-const ButtonText = engine.Text()`
-  ${({ theme }) => ({
-    color: theme.color.text,
-    fontSize: 16,
-    fontWeight: '600',
-  })}
-`;
+const ButtonText = engine('Text', ({ theme }) => ({
+  color: theme.color.text,
+  fontSize: 16,
+  fontWeight: "900",
+}));
 
-const Section = engine.View()`
-  ${({ theme }) => ({
-    marginBottom: theme.spacing.xl,
-  })}
-`;
+const Section = engine('View', ({ theme }) => ({
+  marginBottom: theme.spacing.xl,
+}));
 
-const ColorPalette = engine.View()`
-  ${({ theme }) => ({
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: theme.spacing.md,
-  })}
-`;
+const ColorPalette = engine('View', ({ theme }) => ({
+  flexDirection: 'row',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  marginBottom: theme.spacing.md,
+}));
 
-const ColorBox = engine.View()`
-  ${({ theme }) => ({
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginBottom: theme.spacing.sm,
-    justifyContent: 'center',
-    alignItems: 'center',
-  })}
-`;
+const ColorBox = engine('View', ({ theme }) => ({
+  width: 60,
+  height: 60,
+  borderRadius: 8,
+  marginBottom: theme.spacing.sm,
+  justifyContent: 'center',
+  alignItems: 'center',
+}));
 
-const ColorLabel = engine.Text()`
-  ${({ theme }) => ({
-    fontSize: 10,
-    color: '#ffffff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-  })}
-`;
+const ColorLabel = engine('Text', ({ theme }) => ({
+  fontSize: 10,
+  color: '#ffffff',
+  textAlign: 'center',
+  fontWeight: 'bold',
+}));
 
-const SpacingDemo = engine.View()`
-  ${({ theme }) => ({
-    style: {},
-    marginBottom: theme.spacing.md,
-  })}
-`;
+const SpacingDemo = engine('View', ({ theme }) => ({
+  marginBottom: theme.spacing.md,
+}));
 
-const SpacingBox = engine.View<{ size: number }>()`
-  ${({ size, theme }) => ({
-    style: {},
+const SpacingBox = engine<'View', { size: number }>('View', ({ theme, props: { size } }) => ({
     width: size,
     height: size,
     backgroundColor: theme.color.primary,
     marginBottom: theme.spacing.sm,
     borderRadius: 4,
-  })}
-`;
+  }));
 
 export const TestComponent = () => {
   const [currentTheme, setCurrentTheme] = useState('light');
@@ -186,7 +165,7 @@ export const TestComponent = () => {
   };
 
   return (
-    <Container style={{  }} ref={e => console.log('Ref View')}>
+    <Container>
       <SafeAreaView style={{ flex: 1 }}>
         <StatusBar
           barStyle={currentTheme === 'light' ? 'dark-content' : 'light-content'}
@@ -194,7 +173,7 @@ export const TestComponent = () => {
         />
 
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Content>
+          <>
             {/* Header */}
             <Title>🎨 Stylized Theme Test Suite</Title>
             <BodyText>Teste completo do sistema de temas Stylized</BodyText>
@@ -214,7 +193,7 @@ export const TestComponent = () => {
 
             {/* Color Palette */}
             <Section>
-              <Subtitle>🎨 Paleta de Cores</Subtitle>
+              <Subtitle></Subtitle>
               <Card>
                 <ColorPalette>
                   <ColorBox style={{ backgroundColor: theme.color.primary }}>
@@ -239,7 +218,7 @@ export const TestComponent = () => {
             {/* Button Variants */}
             <Section>
               <Subtitle>🔘 Variações de Botões</Subtitle>
-              <Card>
+              <Card onLayout={e => console.log("CARD ", e.nativeEvent.layout)}>
                 <Button variant="primary">
                   <ButtonText>Botão Primário</ButtonText>
                 </Button>
@@ -303,7 +282,7 @@ export const TestComponent = () => {
                 </BodyText>
               </Card>
             </Section>
-          </Content>
+          </>
         </ScrollView>
       </SafeAreaView>
     </Container>

@@ -1,56 +1,51 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as RN from 'react-native';
-import { ComponentPropsWithRef, ComponentType, Ref } from 'react';
-import type { StyleProp, ViewStyle, TextStyle, ImageStyle } from 'react-native';
+import { ComponentType } from 'react';
+import React from 'react';
 
-// Component-specific style types
-export type ViewStyleProp = StyleProp<ViewStyle>;
-export type TextStyleProp = StyleProp<TextStyle>;
-export type ImageStyleProp = StyleProp<ImageStyle>;
+export type ExtractStyle<C extends ComponentType<any>> =
+  React.ComponentPropsWithRef<C> extends { style?: infer S }
+    ? Exclude<S, (...args: any[]) => any>
+    : never;
 
-// Component style mapping
-export type ComponentStyleMap = {
-  View: ViewStyleProp;
-  Text: TextStyleProp;
-  Image: ImageStyleProp;
-  ScrollView: ViewStyleProp;
-  TouchableOpacity: ViewStyleProp;
-  TextInput: TextStyleProp;
-  FlatList: ViewStyleProp;
-  SectionList: ViewStyleProp;
-  Pressable: ViewStyleProp;
-  SafeAreaView: ViewStyleProp;
-  StatusBar: ViewStyleProp;
-  ActivityIndicator: ViewStyleProp;
-  Switch: ViewStyleProp;
-  Modal: ViewStyleProp;
-  TouchableHighlight: ViewStyleProp;
-  TouchableWithoutFeedback: ViewStyleProp;
-  KeyboardAvoidingView: ViewStyleProp;
-  VirtualizedList: ViewStyleProp;
-};
+export type ComponentStyle<C extends ComponentType<any>> =
+  C extends typeof RN.Text
+    ? RN.StyleProp<RN.TextStyle>
+    : RN.StyleProp<ExtractStyle<C>>;
 
-// Helper type to get style type for component
-export type GetComponentStyle<K extends keyof ComponentStyleMap> = ComponentStyleMap[K];
+export type StyleObject<C extends ComponentType<unknown>> = ComponentStyle<C>;
 
-export type Context<P, AdditionalProps = object> = {
+export interface StyleContext<P> {
   theme: EngineTheme;
-} & P &
-  AdditionalProps;
+  props: P;
+  platform: RN.PlatformOSType;
+}
 
-// @ts-ignore
-export type CtxResolver<DynamicStyle, AdditionalProps, StyleType> = (
-  ctx: Context<DynamicStyle & AdditionalProps>,
-) => StyleProp<StyleType> | StyleProp<StyleType>[] | undefined;
+export type StyleFn<C extends ComponentType<any>, P> = (
+  ctx: StyleContext<P>,
+) => StyleObject<C>;
+export type StyleOrFn<C extends ComponentType<any>, P> =
+  | StyleObject<C>
+  | StyleFn<C, P>;
 
-export type Interpolation<P, AdditionalProps, StyleType> = CtxResolver<P, AdditionalProps, StyleType>;
+// Condition parsed types
+export type ConditionString = string;
+export type ConditionFn<P> = (ctx: StyleContext<P>) => boolean;
+export type Condition<P> = ConditionString | ConditionFn<P>;
 
-export type BaseComponent<P> = ComponentType<P>;
-
-export type ReactNativeComponentProperties<K extends keyof typeof RN> =
-  (typeof RN)[K] extends ComponentType<infer P> ? P : never;
-
-export type RNComponentNames = (typeof RN)[keyof typeof RN];
-
-// @ts-ignore
-export type InferRef<T> = ComponentPropsWithRef<T> extends { ref?: Ref<infer R> } ? R : never;
+export type EngineComponent<
+  C extends ComponentType<unknown>,
+  P extends object = object,
+> = React.ForwardRefExoticComponent<React.ComponentPropsWithRef<C> & P> & {
+  style(s: StyleFn<C, P>): EngineComponent<C, P>;
+  style(s: StyleObject<C>): EngineComponent<C, P>;
+  when(
+    condition: Condition<P>,
+    attrs: Partial<React.ComponentPropsWithRef<C>>,
+  ): EngineComponent<C, P>;
+  attrs: (
+    attrs: Partial<React.ComponentPropsWithRef<C>>,
+  ) => EngineComponent<C, P>;
+  extend(): EngineComponent<C, P>;
+};

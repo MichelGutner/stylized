@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "env:prod": "node ./scripts/prod/generate.js",
-    "build": "rm -rf dist && tspc && tsc -p tsconfig.json",
+    "build": "rm -rf dist && tspc -p tsconfig.json",
     "lint:fix": "yarn lint --fix",
     "lint": "yarn --lint",
     "pipeline:build": "yarn build",
