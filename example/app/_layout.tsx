@@ -13,15 +13,18 @@ setTheme({
     error: '#b00020',
   },
   spacing: {
-    md: 20,
-    xl: 30,
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32,
   },
 });
 
 export default function RootLayout() {
   return (
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-      </Stack>
+    <Stack>
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+    </Stack>
   );
 }

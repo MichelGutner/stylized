@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { Text, ScrollView, SafeAreaView, StatusBar, View } from 'react-native';
+import { Text, ScrollView, StatusBar, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { engine, useTheme, setTheme } from 'stylized/react-native';
 
 const Container = engine('View', ({ theme }) => ({
   flex: 1,
   backgroundColor: theme.color.background,
   padding: theme.spacing.lg,
+}));
+
+const SafeArea = engine(SafeAreaView, ({ theme }) => ({
+  flex: 1,
+  backgroundColor: theme.color.background,
 }));
 
 const Card = engine(View, ({ theme }) => ({
@@ -18,20 +24,11 @@ const Card = engine(View, ({ theme }) => ({
   shadowOpacity: 0.1,
   shadowRadius: 4,
   elevation: 3,
-}))
-
-Card.when(ctx => ctx.platform === 'ios', {
-  ref: (ref) => console.log('Ref específico para iOS:', ref),
-  children: <Text>Card específico para iOS</Text>,
-})
-
-Card.attrs({
-  onLayout: (e) => console.log('Layout do Card:', e.nativeEvent.layout),
-});
+}));
 
 const Title = engine('Text', ({ theme }) => ({
   fontSize: 24,
-  fontWeight: "900",
+  fontWeight: '900',
   color: theme.color.text,
   marginBottom: theme.spacing.md,
   textAlign: 'center',
@@ -59,29 +56,33 @@ const Button = engine<
   'Pressable',
   { variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' }
 >('Pressable', ({ theme, props: { variant = 'primary' } }) => ({
-    backgroundColor:
-      variant === 'primary'
-        ? theme.color.primary
-        : variant === 'secondary'
-          ? theme.color.secondary
-          : variant === 'success'
-            ? theme.color.success
-            : variant === 'warning'
-              ? theme.color.warning
-              : variant === 'error'
-                ? theme.color.error
-                : theme.color.primary,
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.lg,
-    borderRadius: 6,
-    alignItems: 'center',
-    marginBottom: theme.spacing.sm,
-  }));
+  backgroundColor:
+    variant === 'primary'
+      ? theme.color.primary
+      : variant === 'secondary'
+        ? theme.color.secondary
+        : variant === 'success'
+          ? theme.color.success
+          : variant === 'warning'
+            ? theme.color.warning
+            : variant === 'error'
+              ? theme.color.error
+              : theme.color.primary,
+  paddingVertical: theme.spacing.md,
+  paddingHorizontal: theme.spacing.lg,
+  borderRadius: 6,
+  alignItems: 'center',
+  marginBottom: theme.spacing.sm,
+}));
+
+Button.when('variant:primary', {
+  children: <Text>Botão Primário</Text>,
+});
 
 const ButtonText = engine('Text', ({ theme }) => ({
   color: theme.color.text,
   fontSize: 16,
-  fontWeight: "900",
+  fontWeight: '900',
 }));
 
 const Section = engine('View', ({ theme }) => ({
@@ -115,13 +116,26 @@ const SpacingDemo = engine('View', ({ theme }) => ({
   marginBottom: theme.spacing.md,
 }));
 
-const SpacingBox = engine<'View', { size: number }>('View', ({ theme, props: { size } }) => ({
+const SpacingBox = engine<'View', { size: number; disabled?: boolean }>(
+  'View',
+  ({ theme, props: { size, disabled } }) => ({
     width: size,
     height: size,
     backgroundColor: theme.color.primary,
     marginBottom: theme.spacing.sm,
     borderRadius: 4,
-  }));
+  }),
+);
+
+SpacingBox.when(context => context.props.size === 32, {
+  disabled: true,
+});
+
+SpacingBox.style(({ props }) => {
+  return {
+    opacity: props.disabled ? 0.5 : 1,
+  };
+});
 
 export const TestComponent = () => {
   const [currentTheme, setCurrentTheme] = useState('light');
@@ -166,7 +180,7 @@ export const TestComponent = () => {
 
   return (
     <Container>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeArea style={{ flex: 1 }}>
         <StatusBar
           barStyle={currentTheme === 'light' ? 'dark-content' : 'light-content'}
           backgroundColor={theme.color.background}
@@ -218,9 +232,9 @@ export const TestComponent = () => {
             {/* Button Variants */}
             <Section>
               <Subtitle>🔘 Variações de Botões</Subtitle>
-              <Card onLayout={e => console.log("CARD ", e.nativeEvent.layout)}>
+              <Card>
                 <Button variant="primary">
-                  <ButtonText>Botão Primário</ButtonText>
+                  {/* <ButtonText>Botão Primário</ButtonText> */}
                 </Button>
                 <Button variant="secondary">
                   <ButtonText>Botão Secundário</ButtonText>
@@ -284,7 +298,7 @@ export const TestComponent = () => {
             </Section>
           </>
         </ScrollView>
-      </SafeAreaView>
+      </SafeArea>
     </Container>
   );
 };

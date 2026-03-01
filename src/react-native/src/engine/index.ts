@@ -160,5 +160,4 @@ function createEngine(): Engine {
  * ```
  */
 export const engine = createEngine();
-
-export * from './types';
+export type { EngineTheme };
