@@ -1,4 +1,4 @@
-import { StyleContext } from "../react-native/src/engine/types";
+import { BaseStyleContext } from "../core/types";
 
 const STYLE_HASH_PROPS = [
   'variant',
@@ -11,10 +11,9 @@ const STYLE_HASH_PROPS = [
 ] as const;
 
 export function optimizedHash<P extends object>(
-  ctx: StyleContext<P>,
+  ctx: BaseStyleContext<P>,
 ): string {
-  const themeId = (ctx.theme as any)?.id ?? 'theme';
-  let hash = `${ctx.platform}-${themeId}`;
+  let hash = `${ctx?.platform ?? 'default'}-theme`;
 
   const props = ctx.props;
 

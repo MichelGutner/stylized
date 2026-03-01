@@ -78,9 +78,9 @@
   },
   "exports": {
     "./react-native": {
+      "types": "./dist/react-native/index.d.ts",
       "import": "./dist/react-native/index.js",
-      "require": "./dist/react-native/index.js",
-      "types": "./dist/react-native/index.d.ts"
+      "require": "./dist/react-native/index.js"
     }
   }
 }
