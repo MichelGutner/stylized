@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { LRUCache } from '../../../cache/lru';
 import { Condition } from '../../../core/types';
 import { optimizedHash } from '../../../hash/optimizedHash';
@@ -14,6 +15,16 @@ import {
   EngineComponent,
 } from './types';
 
+/**
+ * Evaluates a condition rule.
+ *
+ * Supported formats:
+ * - boolean
+ * - function: (ctx) => boolean
+ * - platform string: 'ios' | 'android' | 'web'
+ * - prop condition: 'variant:primary'
+ * - prop existence: 'disabled'
+ */
 function evaluateCondition<P extends object>(
   condition: Condition<P, StyleContext<P>>,
   ctx: StyleContext<P>,
@@ -47,6 +58,14 @@ function resolveStyle<C extends React.ComponentType<any>, P>(
   return typeof style === 'function' ? (style as StyleFn<C, P>)(ctx) : style;
 }
 
+/**
+ * Internal rule representation used by the styling system.
+ *
+ * There are three types of rules:
+ * - style: defines styles
+ * - when: conditional logic
+ * - attrs: fixed props applied to the component
+ */
 type Rule<C extends React.ComponentType<any>, P> =
   | { kind: 'style'; style: StyleOrFn<C, P> }
   | {
@@ -62,10 +81,20 @@ export class StylizedBuilder<
   C extends React.ComponentType<unknown>,
   P extends object,
 > {
-  /** Array of styling rules to apply */
+  /**
+   * List of rules applied to the component.
+   * Each rule modifies style or props.
+   */
   private rules: Rule<C, P>[] = [];
 
-  /** Cache for computed styles per theme for performance optimization */
+  /**
+   * Cache of computed styles per theme.
+   *
+   * Purpose:
+   * - avoid recalculating styles
+   * - improve performance
+   * - reduce unnecessary renders
+   */
   private cacheByTheme = new WeakMap<
     any,
     LRUCache<string, { computedStyle: any; attrs: any }>
@@ -79,31 +108,20 @@ export class StylizedBuilder<
   }
 
   /**
-   * Adds a style rule to the builder.
+   * Adds a style rule.
    *
-   * Style rules can be static objects or dynamic functions that receive
-   * the style context (theme, props, platform) and return style objects.
+   * Can be:
+   * - a static object
+   * - a dynamic function using:
+   *   - theme
+   *   - props
+   *   - platform
    *
-   * @param styleOrFn - Style object or function to apply
-   * @returns The builder instance for chaining
+   * @example
+   * style({ padding: 16 })
    *
-   * @example Static Style
-   * ```tsx
-   * builder.style({
-   *   backgroundColor: 'white',
-   *   padding: 16,
-   *   borderRadius: 8,
-   * });
-   * ```
-   *
-   * @example Dynamic Style
-   * ```tsx
-   * builder.style(({ theme, props }) => ({
-   *   backgroundColor: props.variant === 'primary' ? theme.colors.primary : theme.colors.secondary,
-   *   padding: theme.spacing.md,
-   *   borderRadius: theme.borderRadius.md,
-   * }));
-   * ```
+   * @example
+   * style(({ theme }) => ({ backgroundColor: theme.color.primary }))
    */
   style(styleOrFn: StyleOrFn<C, P>): this {
     this.rules.push({ kind: 'style', style: styleOrFn });
@@ -111,37 +129,23 @@ export class StylizedBuilder<
   }
 
   /**
-   * Adds a conditional rule to the builder.
+   * Adds a conditional rule.
    *
-   * Conditional rules apply attributes only when the specified condition is met.
-   * Conditions can be platform strings, prop expressions, or custom functions.
+   * The rule is only applied if the condition is true.
    *
-   * @param condition - Condition to evaluate
-   * @param attrs - Attributes to apply when condition is met
-   * @returns The builder instance for chaining
+   * Supported conditions:
+   * - platform: 'ios' | 'android' | 'web'
+   * - prop checks: 'variant:primary', 'disabled'
+   * - custom function: (ctx) => boolean
    *
-   * @example Platform Conditions
-   * ```tsx
-   * builder
-   *   .when('ios', { shadowColor: '#000', shadowOpacity: 0.1 })
-   *   .when('android', { elevation: 4 });
-   * ```
+   * @example
+   * when('ios', { shadowOpacity: 0.2 })
    *
-   * @example Prop Conditions
-   * ```tsx
-   * builder
-   *   .when('variant:primary', { backgroundColor: '#007AFF' })
-   *   .when('variant:secondary', { backgroundColor: '#5856D6' })
-   *   .when('disabled', { opacity: 0.5 });
-   * ```
+   * @example
+   * when('variant:primary', { backgroundColor: 'blue' })
    *
-   * @example Custom Function Conditions
-   * ```tsx
-   * builder.when(
-   *   ({ props }) => props.size > 100,
-   *   { fontSize: 20, fontWeight: 'bold' }
-   * );
-   * ```
+   * @example
+   * when(({ props }) => props.size > 40, { opacity: 0.5 })
    */
   when(
     condition: Condition<P, StyleContext<P>>,
@@ -154,24 +158,16 @@ export class StylizedBuilder<
   }
 
   /**
-   * Adds attribute rules to the builder.
+   * Adds fixed props to the component.
    *
-   * Attribute rules apply component props unconditionally.
-   * Useful for setting accessibility, test IDs, and other component properties.
+   * These props are always applied,
+   * regardless of theme, platform, or conditions.
    *
-   * @param attrs - Attributes to apply to the component
-   * @returns The builder instance for chaining
-   *
-   * @example
-   * ```tsx
-   * builder
-   *   .attrs({
-   *     accessible: true,
-   *     accessibilityLabel: 'Submit button',
-   *     accessibilityRole: 'button',
-   *     testID: 'submit-button',
-   *   });
-   * ```
+   * Useful for:
+   * - accessibility
+   * - testID
+   * - roles
+   * - static configuration
    */
   attrs(attrs: Partial<React.ComponentPropsWithRef<C> & P>): this {
     this.rules.push({ kind: 'attrs', attrs });
@@ -179,27 +175,13 @@ export class StylizedBuilder<
   }
 
   /**
-   * Creates a new builder instance that extends the current builder.
+   * Creates a new builder based on the current one.
    *
-   * The new builder inherits all rules from the current builder,
-   * allowing you to create variations without modifying the original.
+   * Copies all existing rules and allows creating variations
+   * without changing the original component.
    *
-   * @returns A new builder instance with inherited rules
-   *
-   * @example
-   * ```tsx
-   * const BaseButton = new StylizedBuilder(RN.TouchableOpacity)
-   *   .style({
-   *     padding: 16,
-   *     borderRadius: 8,
-   *   });
-   *
-   * const PrimaryButton = BaseButton.extend()
-   *   .style({ backgroundColor: '#007AFF' });
-   *
-   * const SecondaryButton = BaseButton.extend()
-   *   .style({ backgroundColor: '#5856D6' });
-   * ```
+   * Mental model:
+   * "clone + add new rules"
    */
   extend(): StylizedBuilder<C, P> {
     return new StylizedBuilder<C, P>(this.BaseComponent, [...this.rules]);
@@ -216,23 +198,19 @@ export class StylizedBuilder<
         const { computedStyle, attrs } = useMemo(() => {
           const ctx: StyleContext<P> = { theme, props: props as P, platform };
 
-          // Generate hash for caching
           const hash = optimizedHash(ctx);
 
-          // Get or create cache for current theme
           let cache = this.cacheByTheme.get(theme);
           if (!cache) {
             cache = new LRUCache(300);
             this.cacheByTheme.set(theme, cache);
           }
 
-          // Check cache for computed result
           const cached = cache.get(hash);
           if (cached) {
             return cached;
           }
 
-          // Process all rules
           const styles: StyleObject<C>[] = [];
           const attrs: Partial<React.ComponentPropsWithRef<C> & P> = {};
 
@@ -245,32 +223,30 @@ export class StylizedBuilder<
               props: { ...attrs, ...props } as P,
             };
 
-            // Handle conditional rules
             if (rule.kind === 'when') {
               if (evaluateCondition(rule.condition, currentCtx)) {
-                const ruleAttrs = typeof rule.attrs === 'function' ? rule.attrs(currentCtx) : rule.attrs;
+                const ruleAttrs =
+                  typeof rule.attrs === 'function'
+                    ? rule.attrs(currentCtx)
+                    : rule.attrs;
                 Object.assign(attrs, ruleAttrs || {});
               }
             }
 
-            // Handle style rules
             if (rule.kind === 'style') {
               styles.push(resolveStyle(rule.style, currentCtx));
             }
 
-            // Handle attribute rules
             if (rule.kind === 'attrs') {
               Object.assign(attrs, rule?.attrs || {});
             }
-          } 
+          }
 
-          // Create result with flattened styles
           const result = {
             computedStyle: StyleSheet.flatten(styles as unknown[]),
             attrs,
           };
 
-          // Cache the result
           cache.set(hash, result);
 
           return result;
@@ -287,10 +263,8 @@ export class StylizedBuilder<
           return ref;
         }, [theme, props, platform, ref]);
 
-        // Separate style prop from other props
         const { style: propStyle, ...restProps } = props as any;
 
-        // Render the component with merged styles and attributes
         return React.createElement(Base, {
           ...attrs,
           ...restProps,

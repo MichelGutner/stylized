@@ -47,36 +47,7 @@ setTheme({
   colors: { primary: '#007AFF', background: '#FFFFFF' },
   spacing: { md: 16 },
 });
-
-const Container = engine.View()`
-  ${({ theme }) => ({
-    flex: 1,
-    backgroundColor: theme.colors.background,
-    padding: theme.spacing.md,
-  })}
-`;
 ```
-
-### React Web
-
-```tsx
-import { engine, setTheme } from 'stylized/react';
-
-setTheme({
-  colors: { primary: '#007AFF', background: '#FFFFFF' },
-  spacing: { md: 16 },
-});
-
-const Container = engine.div()`
-  ${({ theme }) => ({
-    display: 'flex',
-    minHeight: '100vh',
-    backgroundColor: theme.colors.background,
-    padding: `${theme.spacing.md}px`,
-  })}
-`;
-```
-
 ---
 
 ## ✨ Features
@@ -86,21 +57,6 @@ const Container = engine.div()`
 - 🔒 **Full TypeScript Support**
 - ⚡ **Optimized Performance**
 - 📱 **Cross-Platform Support**
-
----
-
-## 📊 Why Stylized?
-
-| Feature | Stylized | Styled Components | StyleSheet | Emotion |
-|---------|----------|-------------------|-------------|---------|
-| Template Literals | ✅ | ✅ | ❌ | ✅ |
-| Global Theme (No Provider) | ✅ | ❌ | ❌ | ❌ |
-| TypeScript Support | ✅ | ✅ | ✅ | ✅ |
-| React Native Support | ✅ | ✅ | ✅ | ❌ |
-| React Web Support | ✅ | ✅ | ❌ | ✅ |
-| Performance | ⚡ | ⚡ | ⚡⚡ | ⚡ |
-
----
 
 ## 🤝 Community
 
