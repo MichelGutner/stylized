@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs (except dist)
+example/
+dist/
+web-example/
+
+# Development files
+src/
+*.ts
+!*.d.ts
+tsconfig*.json
+babel.config.js
+jest.config.js
+.eslintrc*
+.prettierrc*
+.husky/
+.watch.sh
+.releaserc.js
+
+# Documentation (except README and CHANGELOG)
+docs/
+*.md
+!README.md
+!CHANGELOG.md
+
+# Testing
+__tests__/
+__mocks__/
+*.test.js
+*.test.ts
+*.test.tsx
+*.spec.js
+*.spec.ts
+*.spec.tsx
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Misc
+.yarn-integrity
+.yarn-metadata.json

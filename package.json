@@ -1,7 +1,7 @@
 {
   "name": "stylized",
   "version": "0.0.1",
-  "description": "Modern styling library for React and React Native with template literals and global theming",
+  "description": "Modern styling library for React and React Native with conditional styling and global theming",
   "homepage": "https://github.com/MichelGutner/stylized#readme",
   "repository": {
     "type": "git",
@@ -19,24 +19,22 @@
     "styled-components",
     "css-in-js"
   ],
-  "files": [
-    "dist"
-  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/react-native/index.d.ts",
   "scripts": {
-    "env:prod": "node ./scripts/prod/generate.js",
     "build": "rm -rf dist && tspc -p tsconfig.json",
     "lint:fix": "yarn lint --fix",
     "lint": "yarn --lint",
-    "pipeline:build": "yarn build",
     "test": "jest",
     "build:dev": "yarn build && yalc push",
-    "build:watch": "./watch.sh"
+    "build:watch": "./watch.sh",
+    "prepublishOnly": "npm run build && npm test",
+    "prepack": "npm run build"
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-native": "*",
-    "react-dom": ">=18",
-    "axios": "*"
+    "react-native": ">=0.70"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -77,10 +75,26 @@
     "node": ">=18.0.0"
   },
   "exports": {
+    ".": {
+      "types": "./dist/react-native/index.d.ts",
+      "import": "./dist/react-native/index.js",
+      "require": "./dist/react-native/index.js"
+    },
     "./react-native": {
       "types": "./dist/react-native/index.d.ts",
       "import": "./dist/react-native/index.js",
       "require": "./dist/react-native/index.js"
-    }
-  }
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.js",
+      "require": "./dist/react/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
 }

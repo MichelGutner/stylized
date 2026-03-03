@@ -1,0 +1,10 @@
+{
+  "version": "v1",
+  "packages": {
+    "stylized": {
+      "signature": "8a99d196d54643ccedcd82df001fa000",
+      "file": true,
+      "replaced": "file:../yalc/stylized"
+    }
+  }
+}

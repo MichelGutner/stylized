@@ -50,6 +50,16 @@ export interface BaseEngineComponent<
   P extends object = object,
 > extends React.ForwardRefExoticComponent<React.ComponentPropsWithRef<C> & P> {
   /**
+   * Applies styles to the component.
+   * 
+   * @param styleOrFn - Style object or function that returns styles
+   * @returns BaseEngineComponent instance for chaining
+   */
+  style(
+    styleOrFn: any | ((ctx: BaseStyleContext<P>) => any)
+  ): BaseEngineComponent<C, P>;
+
+  /**
    * Applies attributes when a condition is true.
    *
    * Supported conditions:

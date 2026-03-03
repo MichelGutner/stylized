@@ -3,13 +3,14 @@
   "compilerOptions": {
     "module": "esnext",
     "declaration": true,
+    "declarationMap": true,
     "removeComments": false,
     "preserveSymlinks": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "sourceMap": false,
+    "sourceMap": true,
     "outDir": "./dist",
-    "jsx": "react-native",
+    "jsx": "react-jsx",
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"]
@@ -18,6 +19,8 @@
       { "transform": "typescript-transform-paths", "afterDeclarations": true }
     ],
     "types": ["jest", "node"],
-    "lib": ["esnext"]
-  }
+    "lib": ["esnext", "dom"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "example", "**/__tests__/*", "**/__mocks__/*"]
 }
