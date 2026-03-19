@@ -1,8 +1,8 @@
 # 🎨 Stylized
 
-> Modern styling library for React and React Native with conditional styling and global theming
+> Modern styling library for React Native with conditional styling and global theming
 
-[![npm version](https://badge.fury.io/js/stylized.svg)](https://badge.fury.io/js/stylized)
+[![npm version](https://badge.fury.io/js/react-native-stylized.svg)](https://badge.fury.io/js/react-native-stylized)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ---
@@ -13,7 +13,7 @@
 
 ### 🚀 [Getting Started](./docs/README.md)
 
-Installation, setup, and basic usage for React and React Native.
+Installation, setup, and basic usage for React Native.
 
 ### 📖 [API Reference](./docs/api-reference.md)
 
@@ -23,16 +23,8 @@ Complete API documentation with examples and TypeScript support.
 
 ## ⚡ Quick Start
 
-```bash
-npm install stylized
-# or
-yarn add stylized
-```
-
-### React Native
-
 ```tsx
-import { engine, setTheme } from 'stylized/react-native';
+import { engine, setTheme } from 'react-native-stylized';
 
 // Set up your theme
 setTheme({
@@ -56,35 +48,6 @@ const Button = engine('TouchableOpacity')
 </Button>
 ```
 
-### React Web
-
-```tsx
-import { engine, setTheme } from 'stylized/web';
-
-// Set up your theme
-setTheme({
-  colors: { primary: '#007AFF', background: '#FFFFFF' },
-  spacing: { md: 16 },
-  borderRadius: { md: 8 },
-});
-
-// Create styled components
-const Button = engine('button')
-  .style({ 
-    padding: '16px', 
-    borderRadius: '8px',
-    backgroundColor: '#007AFF',
-    border: 'none',
-    cursor: 'pointer'
-  })
-  .when('disabled', { opacity: 0.5, cursor: 'not-allowed' });
-
-// Use in your app
-<Button disabled={false}>
-  Click me
-</Button>
-```
-
 ---
 
 ## ✨ Features
@@ -93,10 +56,8 @@ const Button = engine('button')
 - 🌍 **Global Theme System** (no providers needed)
 - 🔒 **Full TypeScript Support** with autocomplete
 - ⚡ **Optimized Performance** with caching
-- 📱 **Cross-Platform Support** (React & React Native)
+- 📱 **React Native Support**
 - 🔄 **Method Chaining** for clean syntax
-- 🌐 **CSS Properties** for web styling
-- 📱 **React Native Styles** for mobile
 
 ## 🤝 Community
 
