@@ -82,6 +82,9 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "registry": "https://www.npmjs.com/package/react-native-stylized"
+  },
   "sideEffects": false,
   "files": [
     "dist/**/*.js",
