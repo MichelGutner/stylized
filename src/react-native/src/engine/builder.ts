@@ -73,7 +73,9 @@ type Rule<C extends React.ComponentType<any>, P> =
       condition: Condition<P, StyleContext<P>>;
       attrs?:
         | Partial<React.ComponentPropsWithRef<C> & P>
-        | ((ctx: StyleContext<P>) => Partial<React.ComponentPropsWithRef<C> & P>);
+        | ((
+            ctx: StyleContext<P>,
+          ) => Partial<React.ComponentPropsWithRef<C> & P>);
     }
   | { kind: 'attrs'; attrs: Partial<React.ComponentPropsWithRef<C> & P> };
 
@@ -230,6 +232,15 @@ export class StylizedBuilder<
                     ? rule.attrs(currentCtx)
                     : rule.attrs;
                 Object.assign(attrs, ruleAttrs || {});
+                
+                if ('style' in ruleAttrs && ruleAttrs.style) {
+                  styles.push(
+                    resolveStyle(
+                      ruleAttrs.style as StyleOrFn<C, P>,
+                      currentCtx,
+                    ),
+                  );
+                }
               }
             }
 

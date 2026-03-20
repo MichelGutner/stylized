@@ -31,7 +31,9 @@ export type PropConditionKeys<P> =
         [K in keyof P]-?: NonNullable<P[K]> extends string | number | boolean
           ? NonNullable<P[K]> extends boolean
             ? `${string & K}` | `${string & K}:true` | `${string & K}:false`
-            : `${string & K}` | `${string & K}:${NonNullable<P[K]> extends string | number ? NonNullable<P[K]> : never}`
+            :
+                | `${string & K}`
+                | `${string & K}:${NonNullable<P[K]> extends string | number ? NonNullable<P[K]> : never}`
           : never;
       }[keyof P]
     : P;
@@ -50,16 +52,6 @@ export interface BaseEngineComponent<
   P extends object = object,
 > extends React.ForwardRefExoticComponent<React.ComponentPropsWithRef<C> & P> {
   /**
-   * Applies styles to the component.
-   * 
-   * @param styleOrFn - Style object or function that returns styles
-   * @returns BaseEngineComponent instance for chaining
-   */
-  style(
-    styleOrFn: any | ((ctx: BaseStyleContext<P>) => any)
-  ): BaseEngineComponent<C, P>;
-
-  /**
    * Applies attributes when a condition is true.
    *
    * Supported conditions:
@@ -77,17 +69,17 @@ export interface BaseEngineComponent<
   when(
     condition: Condition<P, BaseStyleContext<P>>,
     attrs:
-      | Partial<Omit<React.ComponentPropsWithRef<C> & P, 'style'>>
+      | Partial<React.ComponentPropsWithRef<C> & P>
       | ((
           ctx: BaseStyleContext<P>,
-        ) => Partial<Omit<React.ComponentPropsWithRef<C> & P, 'style'>>),
+        ) => Partial<React.ComponentPropsWithRef<C> & P>),
   ): BaseEngineComponent<C, P>;
 
   /**
    * Applies attributes unconditionally.
    */
   attrs: (
-    attrs: Partial<Omit<React.ComponentPropsWithRef<C> & P, 'style'>>,
+    attrs: Partial<React.ComponentPropsWithRef<C> & P>,
   ) => BaseEngineComponent<C, P>;
 
   /**
