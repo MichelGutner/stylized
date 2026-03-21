@@ -1,6 +1,6 @@
 {
   "name": "react-native-stylized",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "description": "Modern styling library for React Native with conditional styling and global theming",
   "homepage": "https://github.com/MichelGutner/stylized#readme",
   "repository": {
@@ -81,9 +81,6 @@
       "require": "./dist/react-native/index.js"
     },
     "./package.json": "./package.json"
-  },
-  "publishConfig": {
-    "registry": "https://www.npmjs.com/package/react-native-stylized"
   },
   "sideEffects": false,
   "files": [
