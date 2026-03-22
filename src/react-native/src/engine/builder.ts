@@ -45,7 +45,7 @@ function evaluateCondition<P extends object>(
 
   if (typeof condition === 'string' && condition.includes(':')) {
     const [key, value] = condition.split(':');
-    return (props as Record<string, unknown>)[key] === value;
+    return String(props[key]).includes(value);
   }
 
   return !!(props as Record<string, unknown>)[condition as string];
@@ -99,7 +99,7 @@ export class StylizedBuilder<
    */
   private cacheByTheme = new WeakMap<
     any,
-    LRUCache<string, { computedStyle: any; attrs: any }>
+    LRUCache<string, { computedStyle: any; mergedAttrs: any }>
   >();
 
   constructor(
@@ -197,7 +197,7 @@ export class StylizedBuilder<
         const theme = useTheme();
         const platform = Platform.OS;
 
-        const { computedStyle, attrs } = useMemo(() => {
+        const { computedStyle, mergedAttrs } = useMemo(() => {
           const ctx: StyleContext<P> = { theme, props: props as P, platform };
 
           const hash = optimizedHash(ctx);
@@ -209,12 +209,13 @@ export class StylizedBuilder<
           }
 
           const cached = cache.get(hash);
+
           if (cached) {
             return cached;
           }
 
           const styles: StyleObject<C>[] = [];
-          const attrs: Partial<React.ComponentPropsWithRef<C> & P> = {};
+          const mergedAttrs: Record<string, any> = {};
 
           for (let i = 0; i < this.rules.length; i++) {
             const rule = this.rules[i];
@@ -222,7 +223,7 @@ export class StylizedBuilder<
             const currentCtx: StyleContext<P> = {
               theme,
               platform,
-              props: { ...attrs, ...props } as P,
+              props: { ...mergedAttrs, ...props } as P,
             };
 
             if (rule.kind === 'when') {
@@ -231,15 +232,17 @@ export class StylizedBuilder<
                   typeof rule.attrs === 'function'
                     ? rule.attrs(currentCtx)
                     : rule.attrs;
-                Object.assign(attrs, ruleAttrs || {});
-                
-                if ('style' in ruleAttrs && ruleAttrs.style) {
-                  styles.push(
-                    resolveStyle(
-                      ruleAttrs.style as StyleOrFn<C, P>,
-                      currentCtx,
-                    ),
-                  );
+                    
+
+                if (ruleAttrs) {
+                  const { style: ruleStyle, ...restAttrs } = ruleAttrs as any;
+                  Object.assign(mergedAttrs, restAttrs);
+
+                  if (ruleStyle) {
+                    styles.push(
+                      resolveStyle(ruleStyle as StyleOrFn<C, P>, currentCtx),
+                    );
+                  }
                 }
               }
             }
@@ -249,13 +252,20 @@ export class StylizedBuilder<
             }
 
             if (rule.kind === 'attrs') {
-              Object.assign(attrs, rule?.attrs || {});
+              const { style: attrStyle, ...restAttrs } = (rule?.attrs ||
+                {}) as any;
+              Object.assign(mergedAttrs, restAttrs);
+              if (attrStyle) {
+                styles.push(
+                  resolveStyle(attrStyle as StyleOrFn<C, P>, currentCtx),
+                );
+              }
             }
           }
 
           const result = {
-            computedStyle: StyleSheet.flatten(styles as unknown[]),
-            attrs,
+            computedStyle: StyleSheet.flatten(styles),
+            mergedAttrs,
           };
 
           cache.set(hash, result);
@@ -277,7 +287,7 @@ export class StylizedBuilder<
         const { style: propStyle, ...restProps } = props as any;
 
         return React.createElement(Base, {
-          ...attrs,
+          ...mergedAttrs,
           ...restProps,
           ref: resolvedRef,
           style: propStyle ? [computedStyle, propStyle] : computedStyle,

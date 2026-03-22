@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-object-type */
- 
+
 import * as RN from 'react-native';
-import { ComponentType } from 'react';
+import React, { ComponentType } from 'react';
 import type { StyleProp, ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
 import {
@@ -10,113 +11,37 @@ import {
   BaseEngineComponent,
 } from '../../../core/types';
 
-/**
- * Style prop types for React Native components
- * 
- * These types provide type-safe styling for different component categories.
- * 
- * @example
- * ```tsx
- * // For View-like components
- * const viewStyles: ViewStyleProp = {
- *   backgroundColor: 'white',
- *   padding: 16,
- *   borderRadius: 8,
- * };
- * 
- * // For Text components  
- * const textStyles: TextStyleProp = {
- *   fontSize: 16,
- *   fontWeight: '600',
- *   color: '#333',
- * };
- * 
- * // For Image components
- * const imageStyles: ImageStyleProp = {
- *   width: 100,
- *   height: 100,
- *   borderRadius: 50,
- *   resizeMode: 'cover',
- * };
- * ```
- */
-// Component-specific style types
 export type ViewStyleProp = StyleProp<ViewStyle>;
 export type TextStyleProp = StyleProp<TextStyle>;
 export type ImageStyleProp = StyleProp<ImageStyle>;
 
-/**
- * Style prop type for a component
- * 
- * This type is a generic style prop type that can be used for any component.
- * It is a union of the component's style prop type and the style prop type of its parent component.
- * 
- * @template C - Component type
- */
 export type ComponentStyle<C extends ComponentType<unknown>> =
   C extends typeof RN.Text
     ? RN.StyleProp<RN.TextStyle>
     : RN.StyleProp<ExtractStyle<C>>;
 
-/**
- * Style object type for a component
- * 
- * This type is a generic style object type that can be used for any component.
- * It is a union of the component's style object type and the style object type of its parent component.
- * 
- * @template C - Component type
- */
 export type StyleObject<C extends ComponentType<unknown>> = ComponentStyle<C>;
 
-/**
- * Style context type for a component
- * 
- * This type provides the style context for a component, including the platform and theme.
- * 
- * @template P - Component props type
- */
 export interface StyleContext<P> extends BaseStyleContext<P> {
   platform: RN.PlatformOSType;
 }
 
-/**
- * Style function type for a component
- * 
- * This type is a function that returns a style object for a component.
- * It takes the style context as an argument.
- * 
- * @template C - Component type
- * @template P - Component props type
- */
-export type StyleFn<C extends ComponentType<any>, P> = (
+export type StyleFn<C extends ComponentType<unknown>, P> = (
   ctx: StyleContext<P>,
 ) => StyleObject<C>;
 
-/**
- * Style or function type for a component
- * 
- * This type is a union of the style object type and the style function type for a component.
- * 
- * @template C - Component type
- * @template P - Component props type
- */
-export type StyleOrFn<C extends ComponentType<any>, P> =
+export type StyleOrFn<C extends ComponentType<unknown>, P> =
   | StyleObject<C>
   | StyleFn<C, P>;
 
-/**
- * Engine component type
- * 
- * This type is a styled version of a React Native component.
- * It provides additional methods for styling and theming.
- * 
- * @template C - Component type
- * @template P - Component props type
- */
 export type EngineComponent<
   C extends ComponentType<unknown>,
-  P extends object = object,
+  P extends object = {},
 > = BaseEngineComponent<C, P> & {
+  __engine: true;
+  __component: C;
+  __props: P;
+
   /**
    * @param s style function that receives the style context and returns a style object to be applied to the component
    * @returns the builder instance for chaining
@@ -129,11 +54,6 @@ export type EngineComponent<
   style(args: StyleObject<C>): EngineComponent<C, P>;
 };
 
-/**
- * React Native components type
- * 
- * This type is a mapping of React Native components to their corresponding types.
- */
 type RNComponents = {
   View: typeof RN.View;
   Text: typeof RN.Text;
@@ -153,24 +73,56 @@ type RNComponents = {
   SafeAreaView: typeof RN.SafeAreaView;
 };
 
-/**
- * Engine function type definition
- * 
- * This type is a function that creates a styled version of a React Native component.
- * It can be called with either a string representing a React Native component or a custom React component,
- * along with an optional style object or function.
- * 
- * @template K - Key of RNComponents
- * @template P - Component props type
- */
+type ExtractComponent<T> = T extends { __engine: true; __component: infer C }
+  ? C extends ComponentType<unknown>
+    ? C
+    : never
+  : T extends ComponentType<unknown>
+    ? T
+    : never;
+
+type ExtractProps<T> = T extends { __engine: true; __props: infer P } ? P : {};
+
 export interface Engine {
+  // RN components
   <K extends keyof RNComponents, P extends object = {}>(
     component: K,
     style?: StyleOrFn<RNComponents[K], P>,
   ): EngineComponent<RNComponents[K], P>;
 
-  <C extends React.ComponentType<any>, P extends object = {}>(
+  // EngineComponents
+  <C extends { __engine: true }, P extends object = {}>(
+    component: C,
+    style?: StyleOrFn<ExtractComponent<C>, P & ExtractProps<C>>,
+  ): EngineComponent<ExtractComponent<C>, P & ExtractProps<C>>;
+
+  // React components and others
+  <C extends ComponentType<unknown>, P extends object = {}>(
     component: C,
     style?: StyleOrFn<C, P>,
   ): EngineComponent<C, P>;
 }
+
+export const engine: Engine = (component: any, style?: any) => {
+  const Base = typeof component === 'string' ? RN[component] : component;
+
+  const Comp = React.forwardRef<any, any>((props, ref) => {
+    return React.createElement(Base, {
+      ...props,
+      ref,
+    });
+  }) as any;
+
+  Comp.__engine = true;
+
+  Comp.__component =
+    component?.__engine === true ? component.__component : Base;
+
+  Comp.__props = component?.__engine === true ? component.__props : {};
+
+  if (style && '__baseStyle' in Comp) {
+    Comp.__baseStyle = style;
+  }
+
+  return Comp as EngineComponent<any, any>;
+};

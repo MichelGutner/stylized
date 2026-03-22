@@ -1,59 +1,34 @@
 import { BaseStyleContext } from "../core/types";
 
+/**
+ * Props explicitly excluded from the style cache hash.
+ *
+ * - children: can be long strings or React elements, and style functions
+ *   should never depend on children content.
+ * - key/ref: React internals, not relevant to style computation.
+ */
+const HASH_EXCLUDED_PROPS = new Set(['children', 'key', 'ref']);
+
 export function optimizedHash<P extends object>(
   ctx: BaseStyleContext<P>,
 ): string {
-  const platform = ctx?.platform ?? 'default';
-  const props = ctx?.props ?? ({} as Record<string, any>);
+  let hash = `${ctx?.platform ?? 'default'}`;
 
-  let hash = `${platform}`;
+  const props = ctx.props as Record<string, unknown>;
 
-  const seen = new WeakSet();
+  for (const key in props) {
+    if (HASH_EXCLUDED_PROPS.has(key)) continue;
 
-  const serialize = (val: any, depth = 0): string => {
-    if (val === null || val === undefined) return '';
-
-    const type = typeof val;
-
-    if (type === 'string' || type === 'number' || type === 'boolean') {
-      return String(val);
-    }
-
-    if (type === 'function') {
-      return 'fn';
-    }
-
-    if (Array.isArray(val)) {
-      if (depth > 1) return 'arr';
-      return `[${val.map(v => serialize(v, depth + 1)).join(',')}]`;
-    }
-
-    if (type === 'object') {
-      if (seen.has(val)) return 'circular';
-      seen.add(val);
-
-      // 🔥 LIMITA PROFUNDIDADE (evita stack overflow)
-      if (depth > 1) return 'obj';
-
-      const keys = Object.keys(val).sort();
-
-      return `{${keys
-        .slice(0, 10) // 🔥 limita tamanho
-        .map(k => `${k}:${serialize(val[k], depth + 1)}`)
-        .join(',')}}`;
-    }
-
-    return '';
-  };
-
-  const keys = Object.keys(props).sort();
-
-  for (const key of keys) {
     const val = props[key];
-
-    if (val === undefined) continue;
-
-    hash += `|${key}:${serialize(val)}`;
+    if (
+      val !== undefined &&
+      val !== null &&
+      (typeof val === 'string' ||
+        typeof val === 'number' ||
+        typeof val === 'boolean')
+    ) {
+      hash += `|${key}:${val}`;
+    }
   }
 
   return hash;
