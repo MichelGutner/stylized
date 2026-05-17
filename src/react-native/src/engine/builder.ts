@@ -55,12 +55,12 @@ function resolveStyle<C extends React.ComponentType<any>, P>(
   style: StyleOrFn<C, P>,
   ctx: StyleContext<P>,
 ): StyleObject<C> {
-  return typeof style === 'function' ? (style as StyleFn<C, P>)(ctx) : style;
+  return typeof style === 'function' ? (style as StyleFn<C, P>)(ctx) as StyleObject<C> : style;
 }
 
 /**
  * Internal rule representation used by the styling system.
- *
+*
  * There are three types of rules:
  * - style: defines styles
  * - when: conditional logic

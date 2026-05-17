@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { EngineComponent, StyleFn, StyleObject } from '@/react-native/src/engine/types';
 import { ComponentType } from 'react';
 import React from 'react';
 
@@ -83,7 +84,23 @@ export interface BaseEngineComponent<
   ) => BaseEngineComponent<C, P>;
 
   /**
-   * Creates a new builder instance inheriting current rules.
+   * Applies a style function or style object.
+   * @param s Style function with access to props and theme, or a plain style object.
+   * @returns A new EngineComponent with the style applied.
+   *
+   * TypeScript:
+   * - Style function receives correct props and theme types.
+   * - Style object is type-checked against the component's style prop.
    */
-  extend(): BaseEngineComponent<C, P>;
+  style(s: StyleFn<C, P>): EngineComponent<C, P>;
+
+  /**
+   * Applies a style object directly.
+   * @param args Style object matching the component's style prop.
+   * @returns A new EngineComponent with the style applied.
+   *
+   * TypeScript:
+   * - Style object is type-checked against the component's style prop.
+   */
+  style(args: StyleObject<C>): EngineComponent<C, P>;
 }
